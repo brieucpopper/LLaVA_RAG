@@ -43,17 +43,24 @@ img3 = {
     'image_path' : './shared_data/cat_1.jpg'
 }
 
+img4 = {
+    'caption' : "overall, I think it would be nice if everybody moves away from RAG 1.0 to frozen Frankenstein RAG and moves towards this much more optimized version RAG 2.0, so it's really about systems over models. It's not just your language model and your retriever and they're separate. It's about thinking from a systems perspective about the entire thing and the problem you're trying to solve. And so I think that really is the way that in deep learning things have always progressed, where if you optimize the system end-to-end, that's always going to win out.",
+    'image_path' : './shared_data/stanford.jpg'
+}
+
 
 text1 = img1['caption']
 text2 = img2['caption']
 text3 = img3['caption']
+test4 = img4['caption']
 
 img1 = Image.open(img1['image_path'])
 img2 = Image.open(img2['image_path'])
 img3 = Image.open(img3['image_path'])
+img4 = Image.open(img4['image_path'])
 
-images=[img1, img2, img3]
-texts=[text1, text2, text3]
+images=[img1, img2, img3, img4]
+texts=[text1, text2, text3, test4]
 
 
 ###################################################################
@@ -132,7 +139,7 @@ def get_enhanced_query(query, db, k=1):
     return db[max_idx]['image'], db[max_idx]['text'], query
 
 db = create_RAG_db(images,texts)
-query = 'describe the scene where the red motorcycle is in great detail' ############################# MODIFY THE QUERY HERE
+query = 'What are the 4 main points highlighted in the image? Also, what is the speaker saying about RAG 1.0 ?' ############################# MODIFY THE QUERY HERE
 
 enhanced_query = get_enhanced_query(query, db)
 cprint(f"default query: {query}",on_color='on_green')
