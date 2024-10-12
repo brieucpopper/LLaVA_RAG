@@ -52,7 +52,7 @@ def get_n_closest_index(embedding,n):
     #I[0] has the indexes of the n closest images
     return I[0]
 
-def enhance_query(query):
+def return_image_and_enhanced_query(query):
     
     text_embedding = encode_text_query(query)
     
@@ -60,7 +60,7 @@ def enhance_query(query):
 
     closest_index = get_n_closest_index(text_embedding,1)
     print(f"Closest index is {closest_index[0]} for query '{query}'")
-    return create_enhanced_conversation(df.iloc[closest_index[0]]['raw_text'],query,PIL.Image.open(df.iloc[closest_index[0]]['image_path']))
+    return create_enhanced_conversation(df.iloc[closest_index[0]]['raw_text'],query,Image.open(f"/home/hice1/bpopper3/scratch/VLM/flickr8k/flickr8k_data/Flicker8k_Dataset/{df.iloc[closest_index[0]]['image_path']}"))
 
 
 def create_enhanced_conversation(text,original_query,image):
