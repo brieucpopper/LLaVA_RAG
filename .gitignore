@@ -1,3 +1,6 @@
 ./images
 *.zip
 flickr8k_data
+
+*.bin
+*.out
