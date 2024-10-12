@@ -14,4 +14,13 @@ Then you ask LLaVA a pure-text question, your text question gets embedded into a
 To see how this proof of concept scales, I use the flickr8k dataset of paired images and text.
 
 You can download the flickr8k data easily by running the dl_images.py script
+then 
 
+
+The steps are the following
+
+1. create a csv with 1000 (or however you want) image/text pair info from flickr. The csv has index, image_path,raw_text as keys and is useful to sync up between scripts. For this run create_csv.py
+
+2. compute the embeddings with Bridgetower (using the CSV as input). For this run the script compute_embeddings.py
+
+3. make a query into a "enhanced query". For this run script query.py (No LLaVA yet in that script, but utility functions to create an enhanced query)
