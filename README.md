@@ -23,4 +23,6 @@ The steps are the following
 
 2. compute the embeddings with Bridgetower (using the CSV as input). For this run the script compute_embeddings.py
 
-3. make a query into a "enhanced query". For this run script query.py (No LLaVA yet in that script, but utility functions to create an enhanced query)
+3. OPTIONAL : Just convert a query into a "enhanced query". For this run script query.py (No LLaVA yet in that script, but utility functions to create an enhanced query)
+
+4. Run scripts/chat_with_RAG after editing the query to see what the models answers to your query ! It will answer thanks to the query AND the most relevant image/text pair it found with RAG
