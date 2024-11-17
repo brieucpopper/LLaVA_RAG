@@ -18,6 +18,8 @@ processor = None
 model = None
 is_loaded = False
 def load_bridgetower():
+    global index
+    global df
     print('loading BRIDGETOWER ##############################################################')
     is_loaded = True
     global processor
@@ -27,6 +29,8 @@ def load_bridgetower():
 
 
 def encode_text_query(text):
+    global index
+    global df
     if not is_loaded:
         load_bridgetower()
     #create random Image 32x32
@@ -38,22 +42,23 @@ def encode_text_query(text):
     return outputs['text_embeds'].detach().numpy().reshape(-1)
 
 
-
-#load faiss_index.bin
-index = faiss.read_index('/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/test_uniform/faiss_database.bin')
-
-print(f"Total of {index.ntotal} images in the FAISS Db")
-
-#load df ; keys are index,image_path,raw_text
-df = pd.read_csv("/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/test_uniform/image_transcript_mapping.csv")
-
 def get_n_closest_index(embedding,n):
+    global index
+    global df
     D, I = index.search(np.array([embedding]), n)
     #I[0] has the indexes of the n closest images
     return I[0]
 
-def return_image_and_enhanced_query(query):
-    
+def set_index(folder_path):
+    global index
+    global df
+    index = faiss.read_index(folder_path+'/faiss_database.bin')
+    df = pd.read_csv(folder_path+'/image_transcript_mapping.csv')
+
+def return_image_and_enhanced_query(query,folder_path):
+    global index
+    global df
+    set_index(folder_path)
     text_embedding = encode_text_query(query)
     
     #return query with 1 closest image/text pair to enhance the query
@@ -64,6 +69,8 @@ def return_image_and_enhanced_query(query):
 
 
 def create_enhanced_conversation(text,original_query,image):
+    global index
+    global df
     return [
     {
         "role": "user",

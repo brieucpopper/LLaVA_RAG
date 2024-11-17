@@ -13,8 +13,20 @@ from PIL import Image
 import requests
 from termcolor import cprint
 
+import argparse
 
-INPUT_PATH = '/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/test_uniform'
+# Create the parser
+parser = argparse.ArgumentParser(description="parser for step2")
+
+# Define expected arguments
+parser.add_argument('--i', type=str, help='path to the input folder')
+
+
+# Parse the arguments
+args = parser.parse_args()
+
+
+INPUT_PATH = args.i
 #should have frames folder, and the csv
 
 

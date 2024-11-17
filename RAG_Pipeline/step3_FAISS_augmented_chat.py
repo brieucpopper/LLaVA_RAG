@@ -18,9 +18,22 @@ from termcolor import cprint
 
 from query import return_image_and_enhanced_query
 
-QUERY = "What fruit is next to the crepes?"
 
-conv,image = return_image_and_enhanced_query(QUERY)
+import argparse
+
+# Create the parser
+parser = argparse.ArgumentParser(description="parser for step3")
+
+# Define expected arguments
+parser.add_argument('--i', type=str, help='path to the input folder')
+parser.add_argument('--q', type=str, help='query string')
+
+args = parser.parse_args()
+
+QUERY = args.q
+
+
+conv,image = return_image_and_enhanced_query(QUERY, args.i)
 
 
 ########################## LOADING LLAVA ##########################

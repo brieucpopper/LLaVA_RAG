@@ -3,6 +3,36 @@ import os
 import csv
 import pysrt
 
+
+
+import argparse
+
+# Create the parser
+parser = argparse.ArgumentParser(description="parser for step1")
+
+# Define expected arguments
+parser.add_argument('--v', type=str, help='path to the video file (mp4)')
+parser.add_argument('--o', type=str, help='path to output folder')
+parser.add_argument('--s', type=str, help='path to SRT files (transcript)')
+
+parser.add_argument('--i', type=int, help='frame interval')
+
+# Parse the arguments
+args = parser.parse_args()
+
+video_path = args.v
+output_folder = args.o
+srt_path = args.s
+frame_interval = args.i
+
+# Example usage:
+# video_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/crepe.mp4"
+# output_folder = "test_uniform"
+# srt_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/captions_videocooking.srt"
+csv_output = "image_transcript_mapping.csv"
+# frame_interval = 100  # Sample every 30 frames
+
+
 def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_output, frame_interval=1):
     """
     Extract video frames as images, and create csv in format of [index, image_path, transcript]
@@ -75,11 +105,6 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
     print(f"Saved {saved_count} frames from {video_path} to {output_folder}")
     print(f"Transcript mapping saved to {csv_output}")
 
-# Example usage:
-video_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/crepe.mp4"
-output_folder = "test_uniform"
-srt_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/captions_videocooking.srt"
-csv_output = "image_transcript_mapping.csv"
-frame_interval = 100  # Sample every 30 frames
+
 
 video_to_images_with_transcript(video_path, output_folder, srt_path, csv_output, frame_interval)

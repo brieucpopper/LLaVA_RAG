@@ -5,3 +5,7 @@ flickr8k_data
 *.bin
 *.out
 debug_view_images
+
+test*
+
+*__pycache__*
