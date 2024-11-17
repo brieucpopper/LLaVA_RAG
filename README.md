@@ -7,9 +7,8 @@ You can use the environment.yml conda env to run the scripts, you will need a GP
 
 ## Getting VQA to run with uniform sampling RAG
 
-1. Create a CSV with columns ['index', 'image_path', 'transcript_text','timestamp'] thanks to conversion_script.py
-2. Compute the embeddings with Bridgetower 
-3. use scripts/chat_with_RAG
+1. Create a CSV with columns ['index', 'image_path', 'transcript_text','timestamp'] thanks to step1
+2. Run step 2 to go from CSV ---> FAISS embedding
 
 ## Proof of concept part (./simple_runnable_PoC)
 the script proof_of_concept_RAG.py illustrates the whole process for only 4 images
