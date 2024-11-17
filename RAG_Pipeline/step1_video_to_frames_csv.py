@@ -55,8 +55,13 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
                 if start_time <= timestamp <= end_time:
                     transcript_text = sub.text
                     break
+            #make the img_filename the full path
+            curr_path = os.path.join(os.getcwd(), img_filename)
+            print(curr_path)
 
-            csv_data.append([int(frame_count/frame_interval), img_filename, transcript_text,timestamp])
+            if transcript_text == "":
+                transcript_text = "No transcript available"
+            csv_data.append([int(frame_count/frame_interval), curr_path, transcript_text,timestamp])
 
         frame_count += 1
 
