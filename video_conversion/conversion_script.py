@@ -31,13 +31,16 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
 
     while True:
         success, frame = video.read()
+        #mkdir f"{output_folder}/frames" with os
+        os.makedirs(f"{output_folder}/frames", exist_ok=True)
         
         if not success:
             break
 
         if frame_count % frame_interval == 0:
             # Save the frame as image
-            img_filename = os.path.join(output_folder, f"frame_{frame_count:04d}.jpg")
+            img_filename = f"{output_folder}/frames/frame_{frame_count:04d}.jpg"
+            print(f"Saving frame {frame_count} to {img_filename}")
             cv2.imwrite(img_filename, frame)
             saved_count += 1
 
@@ -53,25 +56,25 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
                     transcript_text = sub.text
                     break
 
-            csv_data.append([int(frame_count/frame_interval), img_filename, transcript_text])
+            csv_data.append([int(frame_count/frame_interval), img_filename, transcript_text,timestamp])
 
         frame_count += 1
 
     video.release()
 
-    with open(csv_output, mode='w', newline='') as csv_file:
+    with open(f'{output_folder}/{csv_output}', mode='w', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(['index', 'image_path', 'transcript_text'])
+        writer.writerow(['index', 'image_path', 'transcript_text','timestamp'])
         writer.writerows(csv_data)
 
     print(f"Saved {saved_count} frames from {video_path} to {output_folder}")
     print(f"Transcript mapping saved to {csv_output}")
 
 # Example usage:
-video_path = "samplevideo.mp4"
-output_folder = "output_images_folder"
-srt_path = "samplevideo.srt"
+video_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/crepe.mp4"
+output_folder = "test_uniform"
+srt_path = "/home/hice1/bpopper3/scratch/LLaVA_RAG_PoC/yt-download/captions_videocooking.srt"
 csv_output = "image_transcript_mapping.csv"
-frame_interval = 30  # Sample every 30 frames
+frame_interval = 100  # Sample every 30 frames
 
 video_to_images_with_transcript(video_path, output_folder, srt_path, csv_output, frame_interval)

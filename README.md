@@ -5,6 +5,12 @@ Inspired by the deeplearning.ai MOOC https://learn.deeplearning.ai/login?callbac
 You can use the environment.yml conda env to run the scripts, you will need a GPU that fits the models in memory though
 
 
+## Getting VQA to run with uniform sampling RAG
+
+1. Create a CSV with columns ['index', 'image_path', 'transcript_text','timestamp'] thanks to conversion_script.py
+2. Compute the embeddings with Bridgetower 
+3. use scripts/chat_with_RAG
+
 ## Proof of concept part (./simple_runnable_PoC)
 the script proof_of_concept_RAG.py illustrates the whole process for only 4 images
 It will find the crossmodal embeddings of the 4image/text pairs (512-dim vectors).

@@ -1,0 +1,19 @@
+index,image_path,transcript_text,timestamp
+0,test_uniform/frames/frame_0000.jpg,,0.0
+1,test_uniform/frames/frame_0100.jpg,to make crepes at home,4.166666666666667
+2,test_uniform/frames/frame_0200.jpg,into a large bowl,8.333333333333334
+3,test_uniform/frames/frame_0300.jpg,lumps in the batter so your crepes come,12.5
+4,test_uniform/frames/frame_0400.jpg,quarter teaspoon of salt to the flour,16.666666666666668
+5,test_uniform/frames/frame_0500.jpg,add the wet ingredients,20.833333333333332
+6,test_uniform/frames/frame_0600.jpg,followed by two whole eggs give the,25.0
+7,test_uniform/frames/frame_0700.jpg,this isn't like pancake batter where you,29.166666666666668
+8,test_uniform/frames/frame_0800.jpg,crepe batter you need it super super,33.333333333333336
+9,test_uniform/frames/frame_0900.jpg,through,37.5
+10,test_uniform/frames/frame_1000.jpg,some butter in a non-stick or cast iron,41.666666666666664
+11,test_uniform/frames/frame_1100.jpg,use a ladle to scoop a portion of the,45.833333333333336
+12,test_uniform/frames/frame_1200.jpg,across the surface,50.0
+13,test_uniform/frames/frame_1300.jpg,spatula to gently flip the crepe,54.166666666666664
+14,test_uniform/frames/frame_1400.jpg,other side this recipe will make roughly,58.333333333333336
+15,test_uniform/frames/frame_1500.jpg,you're now ready to add any filling you,62.5
+16,test_uniform/frames/frame_1600.jpg,well,66.66666666666667
+17,test_uniform/frames/frame_1700.jpg,ready to serve,70.83333333333333
