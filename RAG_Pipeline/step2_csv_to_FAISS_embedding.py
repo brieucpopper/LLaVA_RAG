@@ -40,7 +40,6 @@ def gen_embeddings(path: str, csv:str, model, processor):
         embedding = embedding.reshape(512)
         embeddings[row['index'],:] = embedding
 
-    print(embedding.shape)
 
     # Initialize FAISS index
     dimension = 512  # dimension of your embeddings

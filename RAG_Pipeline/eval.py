@@ -5,50 +5,49 @@ sys.path += ['/home/hice1/jwessell6/VLM/hw1', '/home/hice1/jwessell6/miniconda3/
 import json
 import os 
 from pathlib import Path
-from step1_video_to_frames_csv import video_to_images_with_transcript
-from step2_csv_to_FAISS_embedding import gen_embeddings
-from transformers import BridgeTowerProcessor, BridgeTowerForContrastiveLearning
+from step3_FAISS_augmented_chat import RAG_question
+from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration, BitsAndBytesConfig
 import torch
-
-def generate_frames(split: str, video_code: str, frame_interval = 100):
-    base_dir = os.path.expanduser("~") + "/scratch/VLM_Data/" 
-    dir_contents = os.listdir(base_dir + "raw_videos/" + split + "/" + video_code)
-    if len(dir_contents) != 2:
-        print(f"Files incomplete for {video_code}")
-        return "", ""
-    contents = f"{base_dir}raw_videos/{split}/{video_code}/"
-    if ".srt" in dir_contents[0]:
-        transcript_path = contents +  dir_contents[0]
-        video_path =  contents + dir_contents[1]
-    else:
-        transcript_path =  contents + dir_contents[1]
-        video_path =  contents + dir_contents[0]
-    results_dir = f"{base_dir}eval_{frame_interval}/{split}/{video_code}"
-    if not Path(results_dir).exists():
-        Path(results_dir).mkdir(parents=True)
-    csv = "frames.csv"
-    video_to_images_with_transcript(video_path, results_dir, transcript_path, csv, frame_interval)
-    return results_dir, csv 
-
-
+import pickle
 def main():
-
-    #Comment out if not running on jupyter lab interactive session - it loads with an incorrect sys path and executable
+    llava_processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", device="cuda:0")
+    # specify how to quantize the model
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.float16,
+    )
+    llava_model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", quantization_config=quantization_config, device_map="auto")
     
-    processor = BridgeTowerProcessor.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc")
-    model = BridgeTowerForContrastiveLearning.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc", torch_dtype=torch.float16).to("cuda:0")
+    ##### CHANGE YOUR DIRECTORY STRUCTURE HERE #########
     base_dir = os.path.expanduser("~") + "/scratch/VLM_Data/"
+    egs = os.listdir(base_dir + "raw_videos/training")
     with open(base_dir + "cleaned_db.json", 'r') as file:
         QA = json.load(file)
-
-    egs = os.listdir(base_dir + "raw_videos/training")
-    
+    db_path = base_dir + "eval_100/training/"
+    ###################################################
     for i in range(len(egs)):
-        path, csv = generate_frames("training", egs[i])
-        if path == "" or csv == "":
+        video_code = egs[i]
+        QA_pairs = QA[video_code]['QApairs']
+        
+        #skip over videos we could not properly process or ones we have already completed
+        if not Path(db_path + video_code).exists() or Path(db_path + video_code + "/results.pkl").exists():
             continue
-        gen_embeddings(path, csv, model, processor)
 
+        with open(db_path + video_code + "/answers.pkl", "rb") as file:
+            Q_embs = pickle.load(file)
+        results = []
+        for j in range(len(Q_embs)):
+            question = QA_pairs[j]['question'] + " is the answer: " 
+            for answer in QA_pairs[j]['alternatives']:
+                question += answer
+                question += ", "
+            question += "or "
+            question += QA_pairs[j]['answer']
+            answer = QA_pairs[j]['answer']
+            results.append((answer, RAG_question(db_path + video_code, question, Q_embs[j], llava_processor, llava_model)))
+        with open(db_path + video_code + "/results.pkl", "wb") as file:
+            pickle.dump(results, file)         
+        
 if __name__ == "__main__":
     main()
-    

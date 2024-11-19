@@ -6,14 +6,11 @@ from numpy.linalg import norm
 import cv2
 import pandas as pd
 from tqdm import tqdm
-from transformers import BridgeTowerProcessor, BridgeTowerForContrastiveLearning
 from PIL import Image
-from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 import torch
 from PIL import Image
 import requests
 from termcolor import cprint
-from transformers import LlavaNextForConditionalGeneration, BitsAndBytesConfig
 #import return_image_and_enhanced_query function from ./query.py
 
 from query import return_image_and_enhanced_query
@@ -21,18 +18,27 @@ import argparse
 
 # Create the parser
 
-def RAG_question(path, question):
-    QUERY = args.q
-    conv,image = return_image_and_enhanced_query(QUERY, args.i)
+def RAG_question(path, question, embeddings, processor, model):
+    conv,image = return_image_and_enhanced_query(question, embeddings, path)
+
+    prompt = processor.apply_chat_template(conv, add_generation_prompt=True)
+    inputs = processor(image,prompt, return_tensors="pt").to("cuda:0")
+
+    # autoregressively complete prompt
+    output = model.generate(**inputs, max_new_tokens=200)
+    
+    return processor.decode(output[0], skip_special_tokens=True)
 
 
-    ########################## LOADING LLAVA ##########################
-    #clear cuda
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="parser for step3")
+
+    # Define expected arguments
+    parser.add_argument('--i', type=str, help='path to the input folder')
+    parser.add_argument('--q', type=str, help='query string')
+
+    args = parser.parse_args()
     torch.cuda.empty_cache()
-
-    print("beginning to load LLaVA")
-    #load on cuda:0
-
     llava_processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", device="cuda:0")
 
     # specify how to quantize the model
@@ -43,35 +49,4 @@ def RAG_question(path, question):
     )
 
     llava_model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", quantization_config=quantization_config, device_map="auto")
-
-
-
-    prompt = llava_processor.apply_chat_template(conv, add_generation_prompt=True)
-    inputs = llava_processor(image,prompt, return_tensors="pt").to("cuda:0")
-
-    # autoregressively complete prompt
-    output = llava_model.generate(**inputs, max_new_tokens=200)
-
-    print(f"enhanced answer:{llava_processor.decode(output[0], skip_special_tokens=True)}")
-
-
-# start_secs = time.time()
-
-# for i in tqdm(range(100)):
-#     #takes about 5 second per iteration
-#     print(f'elapsed time {time.time()-start_secs}')
-#     prompt = llava_processor.apply_chat_template(conv, add_generation_prompt=True)
-#     inputs = llava_processor(image,prompt, return_tensors="pt").to("cuda:0")
-
-#     # autoregressively complete prompt
-#     output = llava_model.generate(**inputs, max_new_tokens=100)
-
-#     cprint(f"enhanced answer:{llava_processor.decode(output[0], skip_special_tokens=True)}",on_color='on_red')
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="parser for step3")
-
-    # Define expected arguments
-    parser.add_argument('--i', type=str, help='path to the input folder')
-    parser.add_argument('--q', type=str, help='query string')
-
-    args = parser.parse_args()
+    RAG_question(args.i, args.q, llava_processor, llava_model)
