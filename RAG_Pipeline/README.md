@@ -1,5 +1,7 @@
 Jack: How to use my script to run eval:
 
+NOTE: At the top of each of my files are the lines "import sys" and some magic with the path/environment variables. This is necessary if you run on PACE-ICE in browser, which is how I developed these scripts. If you run locally or simply through ssh, these will get in you way so just commment out/delete them.
+
 I have modified and re-factored the code Brieuc wrote to facilitate eval of RAG pipelines (the code could also be modified to work with standard baseline models as well with minimal effort. I will go over the directions for utilizing this repo here.
 
 1). Run the script I added to ../yt-download (download_youcookii_videos.py). This will download all of the (available) youcookii videos to your target directory. I have this value hard-coded, so make sure to change to work with you directory.
