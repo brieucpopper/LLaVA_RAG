@@ -55,7 +55,7 @@ def set_index(folder_path):
     index = faiss.read_index(folder_path+'/faiss_database.bin')
     df = pd.read_csv(folder_path+'/frames.csv')
 
-def return_image_and_enhanced_query(query, text_embedding, folder_path):
+def return_image_and_enhanced_query(query, text_embedding, folder_path, blind):
     global index
     global df
     set_index(folder_path)
@@ -63,10 +63,13 @@ def return_image_and_enhanced_query(query, text_embedding, folder_path):
     #text_embedding = encode_text_query(query)
     
     #return query with 1 closest image/text pair to enhance the query
-
     closest_index = get_n_closest_index(text_embedding,1)
     #print(f"Closest index is {closest_index[0]} for query '{query}'")
-    return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'],query,Image.open(df.iloc[closest_index[0]]['image_path']))
+    if blind:
+        image = Image.fromarray(np.random.randint(0,255,(32,32,3),dtype=np.uint8))
+    else:
+        image = Image.open(df.iloc[closest_index[0]]['image_path'])
+    return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'],query,image)
 
 
 def create_enhanced_conversation(text,original_query,image):

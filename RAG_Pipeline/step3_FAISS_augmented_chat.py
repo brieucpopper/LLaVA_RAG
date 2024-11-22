@@ -18,15 +18,31 @@ import argparse
 
 # Create the parser
 
-def RAG_question(path, question, embeddings, processor, model):
-    conv,image = return_image_and_enhanced_query(question, embeddings, path)
+def batch_inputs(texts, images):
+    input_ids = []
+    attention_mask = []
+    pixel_values = []
+    image_sizes = []
+    for eg in texts:
+        input_ids.append(torch.squeeze(eg['input_ids']))
+        attention_mask.append(torch.squeeze(eg['attention_mask']))
+    for eg in images:
+        pixel_values.append(torch.squeeze(torch.tensor(np.array(eg['pixel_values']))))
+        image_sizes.append(torch.squeeze(torch.tensor(np.array(eg['image_sizes']))))
+    results = {
+        'input_ids' : torch.stack(input_ids).to("cuda:0"),
+        'attention_mask' : torch.stack(attention_mask).to("cuda:0"),
+        'pixel_values' : torch.stack(pixel_values).to("cuda:0"),
+        'image_sizes' : torch.stack(image_sizes).to("cuda:0")
+    }
+    return results
 
+def RAG_question(path, question, embeddings, processor, model, blind = False):
+    conv,image = return_image_and_enhanced_query(question, embeddings, path, blind)
     prompt = processor.apply_chat_template(conv, add_generation_prompt=True)
     inputs = processor(image,prompt, return_tensors="pt").to("cuda:0")
-
     # autoregressively complete prompt
     output = model.generate(**inputs, max_new_tokens=200)
-    
     return processor.decode(output[0], skip_special_tokens=True)
 
 
