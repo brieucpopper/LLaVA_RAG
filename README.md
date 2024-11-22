@@ -13,6 +13,7 @@ Then if you have a question based on that video, instead of LLaVA trying to answ
 
 This enables the model to answer some questions based on the video.
 
+## The rest of the Readme is TODO / work in progress. Refer to the README in ./RAG_Pipeline for more
 ## Getting VQA to run with uniform sampling RAG
 
 We took some inspiration from the deeplearning.ai MOOC https://learn.deeplearning.ai/login?callbackUrl=https%3A%2F%2Flearn.deeplearning.ai%2Fcourses%2Fmultimodal-rag-chat-with-videos
