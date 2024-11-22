@@ -1,6 +1,9 @@
-This repo is a proof of concept on how to do simple RAG for a multimodal setting (using LLaVA).
+This repo is the repository for the group project done at Georgia Tech for our class CS 8803 VLM.
+**We study how different sampling techniques combined with MultiModal RAG can change the performance of a LLaVA model answering various questions on videos (from [youcook](https://github.com/Jossome/YoucookQA))**
 
-Inspired by the deeplearning.ai MOOC https://learn.deeplearning.ai/login?callbackUrl=https%3A%2F%2Flearn.deeplearning.ai%2Fcourses%2Fmultimodal-rag-chat-with-videos
+With Jack Wessell, Brandon Zhou, Azeez Ishaqui, and Brieuc Popper
+
+We took some inspiration from the deeplearning.ai MOOC https://learn.deeplearning.ai/login?callbackUrl=https%3A%2F%2Flearn.deeplearning.ai%2Fcourses%2Fmultimodal-rag-chat-with-videos
 
 You can use the environment.yml conda env to run the scripts, you will need a GPU that fits the models in memory though
 
