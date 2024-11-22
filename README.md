@@ -3,12 +3,19 @@ This repo is the repository for the group project done at Georgia Tech for our c
 
 With Jack Wessell, Brandon Zhou, Azeez Ishaqui, and Brieuc Popper
 
+## Basic high-level idea 
+
+![rag](https://github.com/user-attachments/assets/4893de55-d34d-469d-a8c3-4ddcae213e00)
+
+For a given video we will keep only some frames in a RAG database. This can be done with uniform sampling (take one frame every 1 second for example). Then for each frame, we get the transcript of the video matching that frame, and encode the **image/text pair** into a 512-dimensional crossmodal embedding (with BridgeTower).
+Then if you have a question based on that video, instead of LLaVA trying to answer without any knowledge of the video, the question will be embedded into a 512-dimensional query, then a nearest-neighbor search will provide the closest match (also possible to retrieve more than one image/text pair). LLaVA is then given this image/text pair as additional information in it's context window, in addition to the original question.
+This enables the model to answer some questions based on the video.
+
+## Getting VQA to run with uniform sampling RAG
+
 We took some inspiration from the deeplearning.ai MOOC https://learn.deeplearning.ai/login?callbackUrl=https%3A%2F%2Flearn.deeplearning.ai%2Fcourses%2Fmultimodal-rag-chat-with-videos
 
 You can use the environment.yml conda env to run the scripts, you will need a GPU that fits the models in memory though
-
-
-## Getting VQA to run with uniform sampling RAG
 
 1. Create a CSV with columns ['index', 'image_path', 'transcript_text','timestamp'] thanks to step1
 2. Run step 2 to go from CSV ---> FAISS embedding
