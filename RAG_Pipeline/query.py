@@ -45,6 +45,7 @@ def encode_text_query(text):
 def get_n_closest_index(embedding,n):
     global index
     global df
+    embedding = np.array(embedding, dtype=np.float32)
     D, I = index.search(np.array([embedding]), n)
     #I[0] has the indexes of the n closest images
     return I[0]
@@ -66,6 +67,9 @@ def return_image_and_enhanced_query(query, text_embedding, folder_path):
 
     closest_index = get_n_closest_index(text_embedding,1)
     #print(f"Closest index is {closest_index[0]} for query '{query}'")
+    print(closest_index, df.shape, index.ntotal)
+    if closest_index[0] == -1:
+        return create_enhanced_conversation("", query, None)
     return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'],query,Image.open(df.iloc[closest_index[0]]['image_path']))
 
 

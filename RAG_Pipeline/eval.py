@@ -24,7 +24,7 @@ def main():
     egs = os.listdir(base_dir + "raw_videos/training")
     with open(base_dir + "cleaned_db.json", 'r') as file:
         QA = json.load(file)
-    db_path = base_dir + "eval_100/training/"
+    db_path = base_dir + "eval_20/training/"
     ###################################################
     for i in range(len(egs)):
         video_code = egs[i]

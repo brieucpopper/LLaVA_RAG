@@ -3,9 +3,9 @@ During evaluation, we will need to embed the questions using bridgetower. This w
 '''
 import sys
 #comment out if needed - pace ice path variables are different in-browser
-sys.executable = 'miniconda3/envs/VLM/bin/python3.10'
-sys.path += ['/home/hice1/jwessell6/VLM/hw1', '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10', 
-    '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10/site-packages', '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10/lib-dynload']
+# sys.executable = 'miniconda3/envs/VLM/bin/python3.10'
+# sys.path += ['/home/hice1/jwessell6/VLM/hw1', '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10', 
+    # '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10/site-packages', '/home/hice1/jwessell6/miniconda3/envs/VLM/lib/python3.10/lib-dynload']
 import json
 import os 
 import pickle
@@ -24,7 +24,7 @@ def main():
     egs = os.listdir(base_dir + "raw_videos/training")
     for i in range(len(egs)):
         video_code = egs[i]
-        if not Path(base_dir + "eval_100/training/" + video_code).exists():
+        if not Path(base_dir + "eval_20/training/" + video_code).exists():
             continue
         QA_pairs = QA[video_code]['QApairs']
         embeddings = []
@@ -41,7 +41,7 @@ def main():
             embeddings.append(outputs['text_embeds'].cpu().detach().numpy().reshape(-1))
         embeddings = np.stack(embeddings, axis = 0)
         print(embeddings.shape)
-        with open(base_dir + "eval_100/training/" + video_code + "/answers.pkl", "wb") as file:
+        with open(base_dir + "eval_20/training/" + video_code + "/answers.pkl", "wb") as file:
             pickle.dump(embeddings, file)
 if __name__ == "__main__":
     main()

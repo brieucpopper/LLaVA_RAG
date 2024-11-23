@@ -19,6 +19,7 @@ import pandas as pd
 def encode_single_image_text(image_path, text, processor, model):
     image = Image.open(image_path)
     encoding = processor(image, text, return_tensors="pt").to("cuda:0")
+    # print("encoding", encoding)
     outputs = model(**encoding)
     return outputs['cross_embeds'].cpu().detach().numpy()
 
@@ -35,6 +36,7 @@ def gen_embeddings(path: str, csv:str, model, processor):
     # Create embeddings for each row
     embeddings = np.zeros((len(df), 512))
     for _, row in tqdm(df.iterrows()):
+        # print("row:", row)
         embedding = encode_single_image_text(row['image_path'], row['transcript_text'], processor, model)
         #reshape to (512,)
         embedding = embedding.reshape(512)
@@ -46,6 +48,7 @@ def gen_embeddings(path: str, csv:str, model, processor):
     index = faiss.IndexFlatL2(dimension)
 
     # Add embeddings to the FAISS index
+    embeddings = np.array(embeddings, dtype=np.float32)
     index.add(embeddings)
 
      #Create a mapping between FAISS ids and dataframe indices
