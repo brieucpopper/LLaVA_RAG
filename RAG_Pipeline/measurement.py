@@ -6,6 +6,7 @@ import pickle
 import argparse
 import os
 from pathlib import Path
+
 def main(path, blind):
     dirs = os.listdir(path)
     correct = 0
@@ -20,10 +21,15 @@ def main(path, blind):
         for pair in results:
             true = pair[0]
             response = pair[1][pair[1].find("[/INST]"):]
+            print(true)
+            print(pair[1])
             if true in response:
                 correct += 1
             count += 1
+        if count > 15:
+            break
     print(correct/count)
+    print(count)
     return
     
 if __name__ == "__main__":
