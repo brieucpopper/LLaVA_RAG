@@ -55,28 +55,27 @@ def set_index(folder_path):
     index = faiss.read_index(folder_path+'/faiss_database.bin')
     df = pd.read_csv(folder_path+'/image_transcript_mapping.csv')
 
-def return_image_and_enhanced_query(query,folder_path):
+def return_image_and_enhanced_query(question,answer_a,answer_b,answer_c,answer_d,folder_path):
     global index
     global df
     set_index(folder_path)
-    text_embedding = encode_text_query(query)
+    text_embedding = encode_text_query(question)
     
     #return query with 1 closest image/text pair to enhance the query
 
     closest_index = get_n_closest_index(text_embedding,1)
-    print(f"Closest index is {closest_index[0]} for query '{query}'")
-    return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'],query,Image.open(df.iloc[closest_index[0]]['image_path']))
+    print(f"Closest index is {closest_index[0]} for query '{question}'")
+    return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'],question,Image.open(df.iloc[closest_index[0]]['image_path']),answer_a,answer_b,answer_c,answer_d)
 
 
-def create_enhanced_conversation(text,original_query,image):
+def create_enhanced_conversation(textt,question,image,answer_a,answer_b,answer_c,answer_d):
     global index
     global df
-    return [
-    {
+    
+    return [{
         "role": "user",
         "content": [
             {"type": "image"},
-            {"type": "text", "text" : f"This image is provided to guide your answer, you should refer to it to help you answer if needed. The image caption is '{text}'.The original user query you have to answer to is '{original_query}'"}
+            {"type": "text", "text" : f"This image is provided to guide your answer, you should refer to it to help you answer if needed. The image caption is '{textt}'.The original user query you have to answer to is '{original_query}'"}
         ],
-    }
-],image
+    }],image

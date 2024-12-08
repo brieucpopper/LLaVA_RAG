@@ -32,8 +32,8 @@ INPUT_PATH = args.i
 
 
 
-processor = BridgeTowerProcessor.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc")
-model = BridgeTowerForContrastiveLearning.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc")
+processor = BridgeTowerProcessor.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc",cache_dir="/home/hice1/bpopper3/scratch/hug_face_files/hub_cache")
+model = BridgeTowerForContrastiveLearning.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc",cache_dir="/home/hice1/bpopper3/scratch/hug_face_files/hub_cache")
 
 
 def encode_single_image_text(image_path, text):
@@ -76,3 +76,4 @@ id_to_index = {i: idx for i, idx in enumerate(df.index)}
 
 # Save the FAISS index
 faiss.write_index(index, f"{INPUT_PATH}/faiss_database.bin")
+print('saved faiss index')

@@ -82,9 +82,9 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
             for sub in subs:
                 start_time = sub.start.ordinal / 1000
                 end_time = sub.end.ordinal / 1000
-                if start_time <= timestamp <= end_time:
-                    transcript_text = sub.text
-                    break
+                if abs(start_time - timestamp) < 10: #10 second tolerance
+                    transcript_text += sub.text+" "
+                    
             #make the img_filename the full path
             curr_path = os.path.join(os.getcwd(), img_filename)
             print(curr_path)
