@@ -6,8 +6,9 @@ With Jack Wessell, Brandon Zhou, Azeez Ishaqui, and Brieuc Popper
 ## Basic high-level idea 
 
 
+![gordon](https://github.com/user-attachments/assets/9856bf76-3fa2-412b-a374-1412bdf07f90)
 
-![image](https://github.com/user-attachments/assets/84e57804-7741-4264-a8f0-4834bdd8e0bb)
+
 
 
 For a given video we will keep only some frames in a RAG database. This can be done with uniform sampling (take one frame every 1 second for example). Then for each frame, we get the transcript of the video matching that frame, and encode the **image/text pair** into a 512-dimensional crossmodal embedding (with BridgeTower).
