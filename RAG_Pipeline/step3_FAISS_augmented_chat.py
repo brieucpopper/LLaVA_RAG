@@ -37,8 +37,8 @@ def batch_inputs(texts, images):
     }
     return results
 
-def RAG_question(path, question, embeddings, answers, processor, model, blind = False):
-    conv, video = return_image_and_enhanced_query(question, embeddings, answers, path, blind)
+def RAG_question(path, question, embeddings, answers, processor, model, sampling, blind = False):
+    conv, video = return_image_and_enhanced_query(question, embeddings, answers, path, sampling, blind)
     prompt = processor.apply_chat_template(conv, add_generation_prompt=True)
     inputs = processor(videos=[video], text = prompt, return_tensors="pt").to("cuda:0", torch.float16)
     # autoregressively complete prompt

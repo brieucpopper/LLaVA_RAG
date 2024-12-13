@@ -58,10 +58,10 @@ def video_to_images_with_transcript(video_path, output_folder, srt_path, csv_out
                 end_time = sub.end.ordinal / 1000
                 if start_time- 2.5 <= timestamp <= end_time + 2.5:
                     transcript_text += sub.text
-            print(transcript_text)    
+            #print(transcript_text)    
             #make the img_filename the full path
             curr_path = os.path.join(os.getcwd(), img_filename)
-            print(curr_path)
+            #print(curr_path)
 
             if transcript_text == "":
                 transcript_text = "No transcript available"

@@ -11,7 +11,7 @@ import torch
 import pickle
 import argparse
 
-def main(f, blind):
+def main(f, m, blind):
     
     # specify how to quantize the model
     quantization_config = BitsAndBytesConfig(
@@ -27,8 +27,8 @@ def main(f, blind):
     egs = os.listdir(base_dir + "raw_videos/training")
     with open(base_dir + "cleaned_db.json", 'r') as file:
         QA = json.load(file)
-    db_path = base_dir + f"eval_{f}/training/"
-    filename = "/results.pkl"
+    db_path = base_dir + f"tsc_eval_{f}/training/"
+    filename = f"/results_{f*m}.pkl"
     if blind:
         filename = "/results_blind.pkl"
     ###################################################
@@ -38,7 +38,7 @@ def main(f, blind):
         QA_pairs = QA[video_code]['QApairs']
         
         #skip over videos we could not properly process or ones we have already completed. Not sure why the following video codes don't work
-        if not Path(db_path + video_code).exists(): #or Path(db_path + video_code + filename).exists() or video_code in ["yLJMpYQg_gA", "_xOx9hkJoBk", "s99K_WyajB8"]:
+        if not Path(db_path + video_code + "/faiss_database.bin").exists() or Path(db_path + video_code + filename).exists() or video_code in ["yLJMpYQg_gA", "_xOx9hkJoBk", "s99K_WyajB8", "vw9FgztLKFc"]:
             continue
         print(video_code)
         with open(db_path + video_code + "/answers.pkl", "rb") as file:
@@ -53,11 +53,12 @@ def main(f, blind):
             for answer in QA_pairs[j]['alternatives']:
                 answers.append(answer)
             answers.append(QA_pairs[j]['answer'])
-            try:
-                results.append((answers[-1], RAG_question(db_path + video_code, question, Q_embs[j], answers, processor, model, blind)))
+            results.append((answers[-1], RAG_question(db_path + video_code, question, Q_embs[j], answers, processor, model, m,  blind)))
+            '''
             except:
                 fails.append(video_code)
                 continue
+            '''
         with open(db_path + video_code + filename, "wb") as file:
             pickle.dump(results, file)         
     with open(db_path + "failures.pkl", "wb") as errors:
@@ -66,7 +67,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="parser for step3")
 
     # Define expected arguments
-    parser.add_argument('--f', type=int, help = 'Sampling rate of interest')
+    parser.add_argument('--f', type=int, help = 'Base sampling rate')
+    parser.add_argument('--m', type=int, default = 1, help = 'Modified sampling rate. We sampled once at 1 frame per 25, so to sample one frame out of every 50, set this argument to 2.')
     parser.add_argument('-b', action = 'store_true', help='Whether to use image-blind evaluation')
     args = parser.parse_args()
-    main(args.f, args.b)
+    main(args.f, args.m, args.b)

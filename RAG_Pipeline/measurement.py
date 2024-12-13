@@ -12,7 +12,7 @@ def main(path):
     correct = 0
     count = 0
     for video in dirs:
-        res = f'{path}/{video}/results_blind.pkl'
+        res = f'{path}/{video}/results_100.pkl'
         #ran into issues with some videos
         if not Path(res).exists():
             continue

@@ -45,9 +45,20 @@ def encode_text_query(text):
 def get_n_closest_index(embedding,n):
     global index
     global df
-    D, I = index.search(np.array([embedding]), n)
-    #I[0] has the indexes of the n closest images
-    return I[0]
+    num = n 
+    if index.ntotal < n:
+        #just return the best option
+        D, I = index.search(np.array([embedding]), 1)
+        return I[0][0]
+    while num <= index.ntotal:
+        D, I = index.search(np.array([embedding]), num)
+        for idx in I[0]:
+            #index found is divisible by n. This means that it is a frame we would have sampled if we had sampled at a larger multiple of our base rate (in this case, 25)
+            if idx % n == 0:
+                return idx
+        #otherwise, double our number of searches
+        num *= 2 
+    return I[0][0]
 
 def set_index(folder_path):
     global index
@@ -55,7 +66,7 @@ def set_index(folder_path):
     index = faiss.read_index(folder_path+'/faiss_database.bin')
     df = pd.read_csv(folder_path+'/frames.csv')
 
-def return_image_and_enhanced_query(query, text_embedding, answers, folder_path, blind):
+def return_image_and_enhanced_query(query, text_embedding, answers, folder_path, sampling, blind):
     global index
     global df
     set_index(folder_path)
@@ -63,19 +74,18 @@ def return_image_and_enhanced_query(query, text_embedding, answers, folder_path,
     #text_embedding = encode_text_query(query)
     
     #return query with 1 closest image/text pair to enhance the query
-    closest_index = get_n_closest_index(text_embedding,1)
+    closest_index = get_n_closest_index(text_embedding, sampling)
     #print(f"Closest index is {closest_index[0]} for query '{query}'")
-    print(blind)
     images = []
     #Video input takes the closest match then a number of prior frames and a number of following frames.
-    for i in range(closest_index[0] - 12, closest_index[0] + 15, 3):
-        if i < 0 or i > len(df):
+    for i in range(closest_index - 4*sampling, closest_index + 5*sampling, sampling):
+        if i < 0 or i >= len(df):
             continue
         if blind:
             images.append(Image.fromarray(np.random.randint(0,255,(32,32,3),dtype=np.uint8)))
             continue
         images.append(Image.open(df.iloc[i]['image_path']))
-    return create_enhanced_conversation(df.iloc[closest_index[0]]['transcript_text'], query, answers, images)
+    return create_enhanced_conversation(df.iloc[closest_index]['transcript_text'], query, answers, images)
 
 
 def create_enhanced_conversation(text, original_query, answers, video):
@@ -107,7 +117,7 @@ def create_enhanced_conversation(text, original_query, answers, video):
         "content": [
             {"type": "video"},
             {"type": "text", "text" : f"""The short video provided is a clip extracted from a larger video. A user has the following question
-            regarding the video: {original_query}. The following transcript may also prove useful: {text}. Given the question, the video, and the transcript provided,
+            regarding the video: {original_query}. Given the question, the video, and the transcript provided,
             what is the answer to the question? You options are:
             Answer A: {answers[0]}
             Answer B: {answers[1]}

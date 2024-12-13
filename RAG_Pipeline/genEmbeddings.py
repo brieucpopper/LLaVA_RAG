@@ -8,8 +8,15 @@ from pathlib import Path
 from step1_video_to_frames_csv import video_to_images_with_transcript
 from step2_csv_to_FAISS_embedding import gen_embeddings
 from transformers import BridgeTowerProcessor, BridgeTowerForContrastiveLearning
+
+from torchvision import models
+import clip
+
 import torch
 import argparse
+from tsc_sampling import select_frames
+import shutil
+import pandas as pd
 
 def generate_frames(split: str, video_code: str, frame_interval = 100):
     base_dir = os.path.expanduser("~") + "/scratch/VLM_Data/" 
@@ -32,8 +39,8 @@ def generate_frames(split: str, video_code: str, frame_interval = 100):
     return results_dir, csv 
 
 
-def main(rate):    
-    
+def main(rate, tsc):    
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     processor = BridgeTowerProcessor.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc")
     model = BridgeTowerForContrastiveLearning.from_pretrained("BridgeTower/bridgetower-large-itm-mlm-itc", torch_dtype=torch.float16).to("cuda:0")
     base_dir = os.path.expanduser("~") + "/scratch/VLM_Data/"
@@ -42,12 +49,53 @@ def main(rate):
 
     egs = os.listdir(base_dir + "raw_videos/training")
     
+    #if temporal scene clustering, set up alternate folders for copying later.
+    if tsc:
+        resnet = models.resnet101(pretrained=True).to(device)
+        resnet.fc = torch.nn.Identity()
+        resnet.avgpool = torch.nn.Identity()
+        resnet.eval()
+        _, preprocess = clip.load("ViT-B/32", device=device)
+        alt_paths = []
+        for i in [25, 50, 100]:
+            alt_path = f"{base_dir}tsc_eval_{i}/training"
+            if not Path(alt_path).exists():
+                Path(alt_path).mkdir(parents=True)
+            alt_paths.append(alt_path)
+    
     for i in range(len(egs)):
         base_dir = os.path.expanduser("~") + "/scratch/VLM_Data/" 
         results_dir = f"{base_dir}eval_{rate}/training/{egs[i]}"        
-        if Path(f"{results_dir}/faiss_database.bin").exists():
+        if Path(f"{results_dir}").exists():
+            continue
+        
+        #if we perform temporal scene clustering, we need to run it in between generate_frames and gen_embeddings.
+        #it is a bit more complex of a process. Since I only want to run it once, I use it to generate the directories for all three experiments I will run.
+        if tsc:
+            #perform normal sampling (1 frame per 10 in our current scenario)
+            path, csv = generate_frames("training", egs[i], rate)
+            if path == "" or csv == "":
+                continue
+            for j in range(len(alt_paths)):
+                new_path = alt_paths[j] + f"/{egs[i]}"
+                shutil.copytree(path, new_path)
+                out_frames, out_results = select_frames(new_path + "/frames", 25, (int) (8/(2**j)), preprocess, resnet)
+                frames = []
+                for frame in out_frames:
+                    frames.append(frame[frame.find('frame_'):])
+                csv = pd.read_csv(new_path + "/frames.csv")
+                #sample csv. Need to reset index.
+                csv = csv[csv['image_path'].str.extract(r'([^/]+)$', expand=False).isin(frames)].reset_index(drop=True)
+                csv.drop('index', axis=1, inplace=True)
+                csv['index'] = csv.index
+                csv.to_csv(new_path + "/frames.csv", index=False)
+                for image in os.listdir(new_path + "/frames"):
+                    if image not in frames:
+                        os.remove(new_path + "/frames/" + image)
+                gen_embeddings(new_path, 'frames.csv', model, processor)
             continue
         path, csv = generate_frames("training", egs[i], rate)
+            
         if path == "" or csv == "":
             continue
         gen_embeddings(path, csv, model, processor)
@@ -55,6 +103,7 @@ def main(rate):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="parser for step3")
     parser.add_argument('--f', type=int, default = 100, help='Frame sampling rate (100 = 1 frame per 100)')
+    parser.add_argument('--tsc', action='store_true', help = "Whether or not to use temporal scene clustering between steps 1 and 2")
     args = parser.parse_args()
-    main(args.f)
+    main(args.f, args.tsc)
     
