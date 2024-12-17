@@ -19,5 +19,5 @@ Then if you have a question based on that video, instead of LLaVA trying to answ
 
 This enables the model to answer some questions based on the video.
 
-## The rest of the Readme is TODO / work in progress. Refer to the README in ./RAG_Pipeline for more
+## Refer to the README in ./RAG_Pipeline for more
 
