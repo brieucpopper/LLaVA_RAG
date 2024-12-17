@@ -15,6 +15,8 @@ For a given video we will keep only some frames in a RAG database. This can be d
 
 Then if you have a question based on that video, instead of LLaVA trying to answer without any knowledge of the video, the question will be embedded into a 512-dimensional query, then a nearest-neighbor search will provide the closest match (also possible to retrieve more than one image/text pair). LLaVA is then given this image/text pair as additional information in it's context window, in addition to the original question.
 
+With the pipeline described above, we then focused on trying to find a way to improve upon naive uniform sampling. We found out some more sophisticated dynamic sampling approaches that helped our model's accuracy, and that are promising for RAG to save some storage and compute.
+
 ![rag](https://github.com/user-attachments/assets/4893de55-d34d-469d-a8c3-4ddcae213e00)
 
 This enables the model to answer some questions based on the video.
