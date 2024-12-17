@@ -23,7 +23,7 @@ This enables the model to answer some questions based on the video.
 ## What we did in this project
 We implemented the whole multimodal pipeline from scratch, using only LLaVA (for multimodal chat) and BridgeTower (to embed an image/text pair or just text into a 512-dimensional latent representation). Some of the interesting challenges we solved include :
  - Creating a RAG that relies not only on images (frames from the video) but also on an aligned transcript. The ablations confirm our models use both information from the transcripts AND from the visual frames.
- - Forced the model to answer A, B, C or D (the questions are multiple choice) with few-shot prompting combined with constrained output (done manually by looking at the probability of each token)
+ - Forced the model to answer A, B, C or D (the questions are multiple choice) with few-shot prompting combined with constrained output (done manually on LLaVA-1.6 by looking at the probability of each token)
  - Implemented TSC (temporal scene clustering) to go from a lot of frames (high sampling rate) to a lot less frames by iteratively eliminating redundant frames
  - Using FAISS for efficient vector storage and retrieval of top-k nearest neighbors
  - Training on a GPU Cluster, with all the challenges associated (different GPUs available at different times, limited total script running time...)
