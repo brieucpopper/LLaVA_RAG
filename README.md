@@ -27,6 +27,7 @@ We implemented the whole multimodal pipeline from scratch, using only LLaVA (for
  - Implemented TSC (temporal scene clustering) to go from a lot of frames (high sampling rate) to a lot less frames by iteratively eliminating redundant frames
  - Using FAISS for efficient vector storage and retrieval of top-k nearest neighbors
  - Training on a GPU Cluster, with all the challenges associated (different GPUs available at different times, limited total script running time...)
+ - Ran various experiments that confirm that when given an equal frame budget (e.g. 50 frames are allowed for a 5 minute video, our RAG performs better with TSC sampling than with uniform sampling). Ran various ablations etc.
 
    
    
