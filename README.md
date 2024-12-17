@@ -29,11 +29,11 @@ We implemented the whole multimodal pipeline from scratch, using only LLaVA (for
  - Training on a GPU Cluster, with all the challenges associated (different GPUs available at different times, limited total script running time...)
  - Ran various experiments that confirm that when given an equal frame budget (e.g. 50 frames are allowed for a 5 minute video, our RAG performs better with TSC sampling than with uniform sampling). Ran various ablations etc.
 
-   
-   
+## Main result
 
-## Refer to the README in ./RAG_Pipeline for more
-
+![image](https://github.com/user-attachments/assets/a377bf81-1a16-4297-8b4a-8a0f595c3eaa)
 
 
-The notebook here : notebook_pipeline_custom_questions/handmade_questions_pipeline_GPU.ipynb has all the code to run the whole pipeline from start to end
+The notebook here : notebook_pipeline_custom_questions/handmade_questions_pipeline_GPU.ipynb has all the code to run the whole pipeline from start to end on our custom questions dataset (similar to YouCookQA)
+
+
