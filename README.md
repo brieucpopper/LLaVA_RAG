@@ -21,3 +21,6 @@ This enables the model to answer some questions based on the video.
 
 ## Refer to the README in ./RAG_Pipeline for more
 
+
+
+The notebook here : notebook_pipeline_custom_questions/handmade_questions_pipeline_GPU.ipynb has all the code to run the whole pipeline from start to end
